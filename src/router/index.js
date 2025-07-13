@@ -34,6 +34,26 @@ const routes = [
         path: 'profile',
         name: 'Profile',
         component: () => import('@/views/Profile.vue')
+      },
+      {
+        path: 'game-recharge',
+        name: 'GameRechargeDashboard',
+        component: () => import('@/views/GameRecharge/Dashboard.vue')
+      },
+      {
+        path: 'game-recharge/orders',
+        name: 'GameRechargeOrders',
+        component: () => import('@/views/GameRecharge/OrderManagement.vue')
+      },
+      {
+        path: 'game-recharge/merchants',
+        name: 'GameRechargeMerchants',
+        component: () => import('@/views/GameRecharge/MerchantManagement.vue')
+      },
+      {
+        path: 'game-recharge/countries',
+        name: 'GameRechargeCountries',
+        component: () => import('@/views/GameRecharge/CountryManagement.vue')
       }
     ]
   }

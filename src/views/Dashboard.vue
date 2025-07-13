@@ -26,6 +26,29 @@
             <el-icon><User /></el-icon>
             <span>个人资料</span>
           </el-menu-item>
+          
+          <el-sub-menu index="game-recharge">
+            <template #title>
+              <el-icon><Money /></el-icon>
+              <span>游戏充值平台</span>
+            </template>
+            <el-menu-item index="./game-recharge">
+              <el-icon><DataAnalysis /></el-icon>
+              <span>数据统计</span>
+            </el-menu-item>
+            <el-menu-item index="./game-recharge/orders">
+              <el-icon><Document /></el-icon>
+              <span>订单管理</span>
+            </el-menu-item>
+            <el-menu-item index="./game-recharge/merchants">
+              <el-icon><Shop /></el-icon>
+              <span>商户管理</span>
+            </el-menu-item>
+            <el-menu-item index="./game-recharge/countries">
+              <el-icon><Location /></el-icon>
+              <span>国家管理</span>
+            </el-menu-item>
+          </el-sub-menu>
         </el-menu>
       </el-aside>
       
@@ -85,7 +108,11 @@ const getPageTitle = () => {
   const titleMap = {
     '/': '任务列表',
     '/categories': '分类管理',
-    '/profile': '个人资料'
+    '/profile': '个人资料',
+    '/game-recharge': '游戏充值平台 - 数据统计',
+    '/game-recharge/orders': '游戏充值平台 - 订单管理',
+    '/game-recharge/merchants': '游戏充值平台 - 商户管理',
+    '/game-recharge/countries': '游戏充值平台 - 国家管理'
   }
   return titleMap[route.path] || '任务管理'
 }
@@ -102,7 +129,7 @@ const handleCommand = (command) => {
       break
   }
 }
-
+//参加肯德基深Vi就哦i
 onMounted(() => {
   // 初始化加载分类数据
   categoriesStore.fetchCategories()
@@ -110,6 +137,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
 .dashboard {
   height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -163,6 +191,22 @@ onMounted(() => {
   background: linear-gradient(135deg, #e74c3c, #c0392b);
   color: white;
   box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+/* 新增：为子菜单标题设置样式 */
+.sidebar-menu :deep(.el-sub-menu__title) {
+  color: #ecf0f1;
+  font-weight: 500; /* 保持字体粗细一致 */
+}
+
+/* 优化：也为子菜单标题添加悬停效果，使其行为更统一 */
+.sidebar-menu :deep(.el-sub-menu__title:hover) {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+  margin: 5px 15px;
+  border-radius: 8px;
 }
 
 .header {
