@@ -138,6 +138,35 @@ onMounted(() => {
 
 <style scoped>
 
+/* 修正子菜单（展开后的 el-menu--inline）背景色为深色 */
+.sidebar-menu :deep(.el-menu--inline) {
+  background-color: transparent !important;
+}
+
+/* 修正子菜单项颜色 */
+.sidebar-menu :deep(.el-menu--inline .el-menu-item) {
+  background-color: transparent !important;
+  color: #ecf0f1 !important;
+  margin: 5px 15px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+/* 子菜单 hover 效果 */
+.sidebar-menu :deep(.el-menu--inline .el-menu-item:hover) {
+  background: linear-gradient(135deg, #3498db, #2980b9) !important;
+  color: white !important;
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* 子菜单 active 状态 */
+.sidebar-menu :deep(.el-menu--inline .el-menu-item.is-active) {
+  background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
 .dashboard {
   height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
