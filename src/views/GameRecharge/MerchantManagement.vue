@@ -136,8 +136,6 @@
           :page-sizes="[10, 20, 50, 100]"
           :total="pagination.total"
           layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
@@ -176,8 +174,8 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio :label="1">启用</el-radio>
-            <el-radio :label="0">禁用</el-radio>
+            <el-radio :value="1">启用</el-radio>
+            <el-radio :value="0">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -203,7 +201,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh, View, Hide, CopyDocument } from '@element-plus/icons-vue'
 import api from '@/services/api'
@@ -286,14 +284,16 @@ const fetchMerchants = async () => {
     })
     
     const response = await api.get('/api/game-recharge/merchants', { params })
-    merchants.value = response.data.data.map(merchant => ({
+    merchants.value = response.data.data ? response.data.data.map(merchant => ({
       ...merchant,
       showApiKey: false,
       showSecretKey: false
-    }))
-    pagination.total = response.data.total
+    })) : []
+    pagination.total = response.data.total || 0
   } catch (error) {
     ElMessage.error('获取商户列表失败')
+    merchants.value = []
+    pagination.total = 0
   } finally {
     loading.value = false
   }
@@ -439,6 +439,11 @@ const toggleSecretKeyVisibility = (merchant) => {
 // 掩码API密钥
 const maskApiKey = (key) => {
   if (!key) return ''
+  if (key.length <= 16) {
+    // 如果密钥长度小于等于16，只显示前4位和后4位
+    return key.substring(0, 4) + '*'.repeat(Math.max(0, key.length - 8)) + key.substring(Math.max(4, key.length - 4))
+  }
+  // 如果密钥长度大于16，显示前8位和后8位
   return key.substring(0, 8) + '*'.repeat(key.length - 16) + key.substring(key.length - 8)
 }
 
@@ -459,18 +464,15 @@ const handleSortChange = ({ prop, order }) => {
   fetchMerchants()
 }
 
-// 处理页面大小变化
-const handleSizeChange = (size) => {
-  pagination.limit = size
+// 监听分页变化
+watch(() => pagination.page, () => {
+  fetchMerchants()
+})
+
+watch(() => pagination.limit, () => {
   pagination.page = 1
   fetchMerchants()
-}
-
-// 处理当前页变化
-const handleCurrentChange = (page) => {
-  pagination.page = page
-  fetchMerchants()
-}
+})
 
 // 格式化日期
 const formatDate = (date) => {

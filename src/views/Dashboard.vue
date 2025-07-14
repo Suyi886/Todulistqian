@@ -12,17 +12,17 @@
           router
           class="sidebar-menu"
         >
-          <el-menu-item index="./">
+          <el-menu-item index="/">
             <el-icon><List /></el-icon>
             <span>任务列表</span>
           </el-menu-item>
           
-          <el-menu-item index="./categories">
+          <el-menu-item index="/categories">
             <el-icon><Collection /></el-icon>
             <span>分类管理</span>
           </el-menu-item>
           
-          <el-menu-item index="./profile">
+          <el-menu-item index="/profile">
             <el-icon><User /></el-icon>
             <span>个人资料</span>
           </el-menu-item>
@@ -32,19 +32,19 @@
               <el-icon><Money /></el-icon>
               <span>游戏充值平台</span>
             </template>
-            <el-menu-item index="./game-recharge">
+            <el-menu-item index="/game-recharge">
               <el-icon><DataAnalysis /></el-icon>
               <span>数据统计</span>
             </el-menu-item>
-            <el-menu-item index="./game-recharge/orders">
+            <el-menu-item index="/game-recharge/orders">
               <el-icon><Document /></el-icon>
               <span>订单管理</span>
             </el-menu-item>
-            <el-menu-item index="./game-recharge/merchants">
+            <el-menu-item index="/game-recharge/merchants">
               <el-icon><Shop /></el-icon>
               <span>商户管理</span>
             </el-menu-item>
-            <el-menu-item index="./game-recharge/countries">
+            <el-menu-item index="/game-recharge/countries">
               <el-icon><Location /></el-icon>
               <span>国家管理</span>
             </el-menu-item>

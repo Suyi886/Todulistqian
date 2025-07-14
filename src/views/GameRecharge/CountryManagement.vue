@@ -109,8 +109,6 @@
           :page-sizes="[10, 20, 50, 100]"
           :total="pagination.total"
           layout="total, sizes, prev, pager, next, jumper"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
         />
       </div>
     </el-card>
@@ -181,8 +179,8 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio :label="1">启用</el-radio>
-            <el-radio :label="0">禁用</el-radio>
+            <el-radio :value="1">启用</el-radio>
+            <el-radio :value="0">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="排序" prop="sort_order">
@@ -216,7 +214,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh } from '@element-plus/icons-vue'
 import api from '@/services/api'
@@ -316,10 +314,12 @@ const fetchCountries = async () => {
     })
     
     const response = await api.get('/api/game-recharge/countries', { params })
-    countries.value = response.data.data
-    pagination.total = response.data.total
+    countries.value = response.data.data || []
+    pagination.total = response.data.total || 0
   } catch (error) {
     ElMessage.error('获取国家列表失败')
+    countries.value = []
+    pagination.total = 0
   } finally {
     loading.value = false
   }
@@ -453,18 +453,15 @@ const handleSortChange = ({ prop, order }) => {
   fetchCountries()
 }
 
-// 处理页面大小变化
-const handleSizeChange = (size) => {
-  pagination.limit = size
+// 监听分页变化
+watch(() => pagination.page, () => {
+  fetchCountries()
+})
+
+watch(() => pagination.limit, () => {
   pagination.page = 1
   fetchCountries()
-}
-
-// 处理当前页变化
-const handleCurrentChange = (page) => {
-  pagination.page = page
-  fetchCountries()
-}
+})
 
 // 格式化日期
 const formatDate = (date) => {
