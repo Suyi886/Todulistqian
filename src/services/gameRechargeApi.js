@@ -52,7 +52,12 @@ export const merchantApi = {
   
   // 重新生成API密钥
   regenerateApiKey(merchantId) {
-    return api.post(`/merchants/${merchantId}/regenerate-key`)
+    return api.put(`/api/game-recharge/merchants/${merchantId}/regenerate-api-key`)
+  },
+
+  // 重新生成密钥
+  regenerateSecretKey(merchantId) {
+    return api.put(`/api/game-recharge/merchants/${merchantId}/regenerate-secret-key`)
   }
 }
 

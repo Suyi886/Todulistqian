@@ -205,6 +205,7 @@ import { ref, reactive, onMounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh, View, Hide, CopyDocument } from '@element-plus/icons-vue'
 import api from '@/services/api'
+import { merchantApi } from '@/services/gameRechargeApi'
 import dayjs from 'dayjs'
 
 // 响应式数据
@@ -284,11 +285,16 @@ const fetchMerchants = async () => {
     })
     
     const response = await api.get('/api/game-recharge/merchants', { params })
-    merchants.value = response.data.data ? response.data.data.map(merchant => ({
-      ...merchant,
-      showApiKey: false,
-      showSecretKey: false
-    })) : []
+    console.log('获取商户列表响应:', response)
+    console.log('商户列表数据:', response.data.data)
+    merchants.value = response.data.data ? response.data.data.map(merchant => {
+      console.log('处理商户数据:', merchant)
+      return {
+        ...merchant,
+        showApiKey: false,
+        showSecretKey: false
+      }
+    }) : []
     pagination.total = response.data.total || 0
   } catch (error) {
     ElMessage.error('获取商户列表失败')
@@ -380,17 +386,23 @@ const submitForm = async () => {
     submitting.value = true
     
     if (isEdit.value) {
-      await api.put(`/api/game-recharge/merchants/${form.id}`, form)
+      console.log('提交更新数据:', form)
+      const response = await api.put(`/api/game-recharge/merchants/${form.id}`, form)
+      console.log('商户更新响应:', response)
       ElMessage.success('商户更新成功')
     } else {
-      await api.post('/api/game-recharge/merchants', form)
+      console.log('提交新增数据:', form)
+      const response = await api.post('/api/game-recharge/merchants', form)
+      console.log('商户新增响应:', response)
       ElMessage.success('商户添加成功')
     }
     
     dialogVisible.value = false
     fetchMerchants()
   } catch (error) {
-    ElMessage.error(isEdit.value ? '更新失败' : '添加失败')
+    console.error('提交表单失败:', error)
+    const errorMessage = error.response?.data?.msg || error.message || (isEdit.value ? '更新失败' : '添加失败')
+    ElMessage.error(errorMessage)
   } finally {
     submitting.value = false
   }
@@ -407,13 +419,51 @@ const resetForm = () => {
 }
 
 // 生成API密钥
-const generateApiKey = () => {
-  form.api_key = generateRandomString(32)
+const generateApiKey = async () => {
+  if (isEdit.value && form.id) {
+    // 编辑模式下调用后端接口重新生成
+    try {
+      const response = await merchantApi.regenerateApiKey(form.id)
+      console.log('API密钥重新生成响应:', response)
+      if (response.data && response.data.status === 'success' && response.data.data && response.data.data.api_key) {
+        form.api_key = response.data.data.api_key
+        ElMessage.success('API密钥重新生成成功')
+      } else {
+        console.error('API密钥重新生成失败 - 响应格式错误:', response)
+        ElMessage.error('API密钥重新生成失败')
+      }
+    } catch (error) {
+      console.error('API密钥重新生成失败 - 请求错误:', error)
+      ElMessage.error('API密钥重新生成失败')
+    }
+  } else {
+    // 新增模式下本地生成
+    form.api_key = generateRandomString(32)
+  }
 }
 
 // 生成密钥
-const generateSecretKey = () => {
-  form.secret_key = generateRandomString(32)
+const generateSecretKey = async () => {
+  if (isEdit.value && form.id) {
+    // 编辑模式下调用后端接口重新生成
+    try {
+      const response = await merchantApi.regenerateSecretKey(form.id)
+      console.log('密钥重新生成响应:', response)
+      if (response.data && response.data.status === 'success' && response.data.data && response.data.data.secret_key) {
+        form.secret_key = response.data.data.secret_key
+        ElMessage.success('密钥重新生成成功')
+      } else {
+        console.error('密钥重新生成失败 - 响应格式错误:', response)
+        ElMessage.error('密钥重新生成失败')
+      }
+    } catch (error) {
+      console.error('密钥重新生成失败 - 请求错误:', error)
+      ElMessage.error('密钥重新生成失败')
+    }
+  } else {
+    // 新增模式下本地生成
+    form.secret_key = generateRandomString(32)
+  }
 }
 
 // 生成随机字符串
